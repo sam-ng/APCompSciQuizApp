@@ -4,6 +4,7 @@ import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -50,7 +51,8 @@ public class MainActivity extends AppCompatActivity {
 
         db = Room.databaseBuilder(getApplicationContext(),
                 Database.class,
-                "QuizApp.db")
+                "QuizApp.db"
+                )
                 .openHelperFactory(new AssetSQLiteOpenHelperFactory())
                 .allowMainThreadQueries()
                 .build();
@@ -69,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         choiceB = (RadioButton) findViewById(R.id.choiceB);
         choiceC = (RadioButton) findViewById(R.id.choiceC);
         choiceD = (RadioButton) findViewById(R.id.choiceD);
+        next = (Button) findViewById(R.id.next);
 
         score = 0;
         questionNum = 0;
@@ -80,13 +83,14 @@ public class MainActivity extends AppCompatActivity {
         data.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                next = (Button) findViewById(R.id.next);
+                db.getQuizDao().deleteAllScores();
                 finished = new ArrayList<Integer>();
                 questionList = db.getQuizDao().findQuestionsByID(100, 105);
                 questionNum = random.nextInt(6);
                 finished.add(questionNum);
                 currentQuestion = questionList.get(questionNum);
                 topic.setText(currentQuestion.getTopic());
+                question.setText(currentQuestion.getQuestion());
                 choiceA.setText(currentQuestion.getChoiceA());
                 choiceB.setText(currentQuestion.getChoiceB());
                 choiceC.setText(currentQuestion.getChoiceC());
@@ -96,13 +100,14 @@ public class MainActivity extends AppCompatActivity {
         classObject.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                next = (Button) findViewById(R.id.next);
+                db.getQuizDao().deleteAllScores();
                 finished = new ArrayList<Integer>();
                 questionList = db.getQuizDao().findQuestionsByID(200, 205);
                 questionNum = random.nextInt(6);
                 finished.add(questionNum);
                 currentQuestion = questionList.get(questionNum);
                 topic.setText(currentQuestion.getTopic());
+                question.setText(currentQuestion.getQuestion());
                 choiceA.setText(currentQuestion.getChoiceA());
                 choiceB.setText(currentQuestion.getChoiceB());
                 choiceC.setText(currentQuestion.getChoiceC());
@@ -112,13 +117,14 @@ public class MainActivity extends AppCompatActivity {
         conditional.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                next = (Button) findViewById(R.id.next);
+                db.getQuizDao().deleteAllScores();
                 finished = new ArrayList<Integer>();
                 questionList = db.getQuizDao().findQuestionsByID(300, 305);
                 questionNum = random.nextInt(6);
                 finished.add(questionNum);
                 currentQuestion = questionList.get(questionNum);
                 topic.setText(currentQuestion.getTopic());
+                question.setText(currentQuestion.getQuestion());
                 choiceA.setText(currentQuestion.getChoiceA());
                 choiceB.setText(currentQuestion.getChoiceB());
                 choiceC.setText(currentQuestion.getChoiceC());
@@ -128,13 +134,14 @@ public class MainActivity extends AppCompatActivity {
         iteration.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                next = (Button) findViewById(R.id.next);
+                db.getQuizDao().deleteAllScores();
                 finished = new ArrayList<Integer>();
                 questionList = db.getQuizDao().findQuestionsByID(400, 405);
                 questionNum = random.nextInt(6);
                 finished.add(questionNum);
                 currentQuestion = questionList.get(questionNum);
                 topic.setText(currentQuestion.getTopic());
+                question.setText(currentQuestion.getQuestion());
                 choiceA.setText(currentQuestion.getChoiceA());
                 choiceB.setText(currentQuestion.getChoiceB());
                 choiceC.setText(currentQuestion.getChoiceC());
@@ -144,13 +151,14 @@ public class MainActivity extends AppCompatActivity {
         string.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                next = (Button) findViewById(R.id.next);
+                db.getQuizDao().deleteAllScores();
                 finished = new ArrayList<Integer>();
                 questionList = db.getQuizDao().findQuestionsByID(500, 505);
                 questionNum = random.nextInt(6);
                 finished.add(questionNum);
                 currentQuestion = questionList.get(questionNum);
                 topic.setText(currentQuestion.getTopic());
+                question.setText(currentQuestion.getQuestion());
                 choiceA.setText(currentQuestion.getChoiceA());
                 choiceB.setText(currentQuestion.getChoiceB());
                 choiceC.setText(currentQuestion.getChoiceC());
@@ -164,17 +172,19 @@ public class MainActivity extends AppCompatActivity {
                 RadioButton answer = (RadioButton) findViewById(group.getCheckedRadioButtonId());
                 if (currentQuestion.getCorrectAnswer().equals(answer.getText())) {
                     score++;
+                    Score scoreObj = new Score(1, 0, currentQuestion.getId(), answer.getText().toString());
+                    db.getQuizDao().insertScore(scoreObj);
                 }
+                Score scoreObj = new Score(0, 1, currentQuestion.getId(), answer.getText().toString());
                 if (finished.size() < 6) {
                     questionNum = random.nextInt(6);
-                    for (int i = 0; i < finished.size(); i++) {
-                        while (questionNum == finished.get(i).intValue()) {
-                            questionNum = random.nextInt(6);
-                        }
+                    while (finished.contains(new Integer(questionNum))) {
+                        questionNum = random.nextInt(6);
                     }
                     finished.add(questionNum);
                     currentQuestion = questionList.get(questionNum);
                     topic.setText(currentQuestion.getTopic());
+                    question.setText(currentQuestion.getQuestion());
                     choiceA.setText(currentQuestion.getChoiceA());
                     choiceB.setText(currentQuestion.getChoiceB());
                     choiceC.setText(currentQuestion.getChoiceC());

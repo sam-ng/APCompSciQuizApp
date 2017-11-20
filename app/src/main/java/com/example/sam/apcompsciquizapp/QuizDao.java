@@ -23,8 +23,8 @@ public interface QuizDao {
     @Delete
     int deleteAllQuestions(Questions[] questions);
 
-    @Delete
-    int deleteAllScores(Score[] scores);
+    //@Delete
+    //int deleteAllScores(Score[] scores);
 
     @Update
     int updateQuestion(Questions question);
@@ -37,4 +37,7 @@ public interface QuizDao {
 
     @Query("SELECT * FROM score")
     List<Score> scores();
+
+    @Query("DELETE FROM score")
+    void deleteAllScores();
 }
