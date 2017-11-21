@@ -23,11 +23,6 @@ public class MainActivity extends AppCompatActivity {
     List<Questions> questionList;
     Database db;
 
-    private Button data;
-    private Button classObject;
-    private Button conditional;
-    private Button iteration;
-    private Button string;
     private TextView topic;
 
     private Questions currentQuestion;
@@ -42,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
     private RadioButton choiceD;
     private Button next;
 
+    private String topicChoice;
+
     private int score;
 
     @Override
@@ -49,21 +46,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        db = Room.databaseBuilder(getApplicationContext(),
-                Database.class,
-                "QuizApp.db"
-                )
-                .openHelperFactory(new AssetSQLiteOpenHelperFactory())
-                .allowMainThreadQueries()
-                .build();
+        db = Room.databaseBuilder(getApplicationContext(), Database.class, "QuizApp2.db").openHelperFactory(new AssetSQLiteOpenHelperFactory()).allowMainThreadQueries().build();
 
-        data = (Button) findViewById(R.id.data);
-        classObject = (Button) findViewById(R.id.classObject);
-        conditional = (Button) findViewById(R.id.conditional);
-        iteration = (Button) findViewById(R.id.iteration);
-        string = (Button) findViewById(R.id.string);
         topic = (TextView) findViewById(R.id.topic);
-
         question = (TextView) findViewById(R.id.question);
         random = new Random();
 
@@ -73,98 +58,48 @@ public class MainActivity extends AppCompatActivity {
         choiceD = (RadioButton) findViewById(R.id.choiceD);
         next = (Button) findViewById(R.id.next);
 
+        Intent intent = getIntent();
+        topicChoice = intent.getStringExtra("topic");
+        Bundle b = getIntent().getExtras();
+        questionNum =b.getInt("qNum");
+
+        finished = new ArrayList<Integer>();
+        finished.add(questionNum);
         score = 0;
-        questionNum = 0;
+
+        switch (topicChoice) {
+            case "data":
+                questionList = db.getQuizDao().findQuestionsByID(100, 105);
+                break;
+            case "classObject":
+                questionList = db.getQuizDao().findQuestionsByID(200, 205);
+                break;
+            case "conditional":
+                questionList = db.getQuizDao().findQuestionsByID(300, 305);
+                break;
+            case "iteration":
+                questionList = db.getQuizDao().findQuestionsByID(400, 405);
+                break;
+            case "string":
+                questionList = db.getQuizDao().findQuestionsByID(500, 505);
+                break;
+            default:
+                finish();
+                break;
+        }
+
+        currentQuestion = questionList.get(questionNum);
+        topic.setText(currentQuestion.getTopic());
+        question.setText(currentQuestion.getQuestion());
+        choiceA.setText(currentQuestion.getChoiceA());
+        choiceB.setText(currentQuestion.getChoiceB());
+        choiceC.setText(currentQuestion.getChoiceC());
+        choiceD.setText(currentQuestion.getChoiceD());
 
         addListenerOnButton();
     }
 
     public void addListenerOnButton() {
-        data.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                db.getQuizDao().deleteAllScores();
-                finished = new ArrayList<Integer>();
-                questionList = db.getQuizDao().findQuestionsByID(100, 105);
-                questionNum = random.nextInt(6);
-                finished.add(questionNum);
-                currentQuestion = questionList.get(questionNum);
-                topic.setText(currentQuestion.getTopic());
-                question.setText(currentQuestion.getQuestion());
-                choiceA.setText(currentQuestion.getChoiceA());
-                choiceB.setText(currentQuestion.getChoiceB());
-                choiceC.setText(currentQuestion.getChoiceC());
-                choiceD.setText(currentQuestion.getChoiceD());
-            }
-        });
-        classObject.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                db.getQuizDao().deleteAllScores();
-                finished = new ArrayList<Integer>();
-                questionList = db.getQuizDao().findQuestionsByID(200, 205);
-                questionNum = random.nextInt(6);
-                finished.add(questionNum);
-                currentQuestion = questionList.get(questionNum);
-                topic.setText(currentQuestion.getTopic());
-                question.setText(currentQuestion.getQuestion());
-                choiceA.setText(currentQuestion.getChoiceA());
-                choiceB.setText(currentQuestion.getChoiceB());
-                choiceC.setText(currentQuestion.getChoiceC());
-                choiceD.setText(currentQuestion.getChoiceD());
-            }
-        });
-        conditional.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                db.getQuizDao().deleteAllScores();
-                finished = new ArrayList<Integer>();
-                questionList = db.getQuizDao().findQuestionsByID(300, 305);
-                questionNum = random.nextInt(6);
-                finished.add(questionNum);
-                currentQuestion = questionList.get(questionNum);
-                topic.setText(currentQuestion.getTopic());
-                question.setText(currentQuestion.getQuestion());
-                choiceA.setText(currentQuestion.getChoiceA());
-                choiceB.setText(currentQuestion.getChoiceB());
-                choiceC.setText(currentQuestion.getChoiceC());
-                choiceD.setText(currentQuestion.getChoiceD());
-            }
-        });
-        iteration.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                db.getQuizDao().deleteAllScores();
-                finished = new ArrayList<Integer>();
-                questionList = db.getQuizDao().findQuestionsByID(400, 405);
-                questionNum = random.nextInt(6);
-                finished.add(questionNum);
-                currentQuestion = questionList.get(questionNum);
-                topic.setText(currentQuestion.getTopic());
-                question.setText(currentQuestion.getQuestion());
-                choiceA.setText(currentQuestion.getChoiceA());
-                choiceB.setText(currentQuestion.getChoiceB());
-                choiceC.setText(currentQuestion.getChoiceC());
-                choiceD.setText(currentQuestion.getChoiceD());
-            }
-        });
-        string.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                db.getQuizDao().deleteAllScores();
-                finished = new ArrayList<Integer>();
-                questionList = db.getQuizDao().findQuestionsByID(500, 505);
-                questionNum = random.nextInt(6);
-                finished.add(questionNum);
-                currentQuestion = questionList.get(questionNum);
-                topic.setText(currentQuestion.getTopic());
-                question.setText(currentQuestion.getQuestion());
-                choiceA.setText(currentQuestion.getChoiceA());
-                choiceB.setText(currentQuestion.getChoiceB());
-                choiceC.setText(currentQuestion.getChoiceC());
-                choiceD.setText(currentQuestion.getChoiceD());
-            }
-        });
         next.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
